@@ -3,7 +3,8 @@ import { AnimatedTestimonials } from "@/components/ui/animated-testimonials";
 import IconCloud from "@/components/ui/icon-cloud";
 import { AnimatedBeamMultipleOutputDemo } from "./AnimatedBeamMultipleOutputDemo";
 import RetroGrid from "@/components/ui/retro-grid";
- 
+import AppleCardsCarouselDemo from "./AppleCardsCarouselDemo";
+
 const slugs = [
   "typescript",
   "javascript",
@@ -76,19 +77,37 @@ export default function Home() {
     },
   ];
   return (
-      <>
-      <div className="relative flex  w-full flex-col items-center justify-center overflow-hidden rounded-lg border bg-background md:shadow-xl">
-      <span className="pointer-events-none z-10 whitespace-pre-wrap bg-gradient-to-b from-[#ffd319] via-[#ff2975] to-[#8c1eff] bg-clip-text text-center text-7xl font-bold leading-none tracking-tighter text-transparent">
-        Retro Grid
-      </span>
-      <AnimatedTestimonials testimonials={testimonials} />
-      <div className="relative flex size-full max-w-lg items-center justify-center overflow-hidden rounded-lg border bg-background px-20 pb-20 pt-8 ">
-      <IconCloud iconSlugs={slugs} />
+      <main style={{width:window.innerWidth>1023?'90%':'100%', marginLeft:window.innerWidth>1023?'5%':'0%', background:'rgb(2 6 23)'}}>
+      <div  className="relative flex  w-full flex-col items-left justify-center overflow-hidden rounded-lgs bg-slate-950">
+      <div style={{display:window.innerWidth>1023?'inline-flex':'block'}}>
+        <li style={{width:window.innerWidth>1023?'45%':'100%', display:'inline-flex', padding:window.innerWidth>1000?"5vh":"0vh"}}>
+          <div className="relative flex max-w-lg items-center justify-center overflow-hidden  bg-slate-950 px-10 pb-10 pt-4 ">
+            <IconCloud iconSlugs={slugs} />
+          </div>
+        </li>
+        <li style={{width:window.innerWidth>1023?'60%':'100%', display:'inline-flex', padding:window.innerWidth>1023?'10vh':'3vh', textAlign:window.innerWidth>1023?"left":"center"}}>
+          <div>
+            <p className=" tracking-tighter text-6xl sm:text-6xl md:text-6xl  lg:text-6xl xl:text-9xl text-gray-900 dark:text-white mb-4 pt-5 text-gray-50">Sankan AI</p>
+            <h1 className="tracking-tight text-1xl sm:text-2xl md:text-2xl  lg:text-2xl xl:text-3xl text-gray-900 dark:text-white mb-4 text-gray-50" style={{width:window.innerWidth>1023?'75%':'100%'}}>Today we are creating platform for Kids Coding, But we will be more</h1>
+          </div>
+        </li>
       </div>
-      <AnimatedBeamMultipleOutputDemo/>
-      
+      <AnimatedTestimonials testimonials={testimonials} />
       <RetroGrid />
-    </div>
-      </>
+      </div>
+      <div style={{marginTop:'2vh'}}>
+        <div style={{display:'inline-flex', width:window.innerWidth>1023?'50%':'100%', padding:window.innerWidth>1000?"8vh":"0vh"}}>
+            <h1 className=" tracking-tighter text-7xl text-gray-50 "  style={{width:'100%', textAlign:window.innerWidth>1023?"left":"center", fontSize:window.innerWidth>1023?'70px':'50px'}}>
+              Sankan AI <br/>
+              <p className="tracking-tight text-3xl dark:text-white mb-4 text-gray-50 mt:10" style={{width:'100%', fontSize:window.innerWidth>1023?'45px':'25px'}}>Today we are creating platform for Kids Coding, But we will be more</p>
+            </h1>
+        </div>
+        <div style={{ display:'inline-flex',width:window.innerWidth>1023?'45%':'90%',marginLeft:window.innerWidth>1000?'0%':'5%', marginTop:'3vh'}}>
+          <AnimatedBeamMultipleOutputDemo/>
+        </div>
+      </div>
+      <AppleCardsCarouselDemo/>
+
+      </main>
   );
 }

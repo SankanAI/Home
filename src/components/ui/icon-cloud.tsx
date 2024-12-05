@@ -18,6 +18,7 @@ export const cloudProps: Omit<ICloud, "children"> = {
       alignItems: "center",
       width: "100%",
       paddingTop: 40,
+      background:'#020617'
     },
   },
   options: {
@@ -37,8 +38,8 @@ export const cloudProps: Omit<ICloud, "children"> = {
 };
 
 export const renderCustomIcon = (icon: SimpleIcon, theme: string) => {
-  const bgHex = theme === "light" ? "#f3f2ef" : "#080510";
-  const fallbackHex = theme === "light" ? "#6e6e73" : "#ffffff";
+  const bgHex ="#020617";
+  const fallbackHex ="#ffffff";
   const minContrastRatio = theme === "dark" ? 2 : 1.2;
   return renderSimpleIcon({
     icon,
