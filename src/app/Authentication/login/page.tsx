@@ -3,10 +3,132 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Github, Send } from 'lucide-react'
+import { supabase } from '@/lib/supabase-client'
+import Cookies from 'js-cookie'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Provider } from '@supabase/supabase-js'
 
 export default function CreateAccount() {
+  const router = useRouter()
+  const [error, setError] = useState<string>('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const setUserCookies = (userData: any) => {
+    // Store user ID in a secure, HTTP-only cookie
+    Cookies.set('userId', userData.user?.id, { 
+      expires: 7, // 7 days expiration
+      secure: process.env.NODE_ENV === 'production', // Only secure in production
+      sameSite: 'strict'
+    })
+
+    // Optionally store additional user information
+    if (userData.user?.email) {
+      Cookies.set('userEmail', userData.user.email, { 
+        expires: 7,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      })
+    }
+  }
+
+  const handleEmailSignUp = async () => {
+    // Basic email and password validation
+    if (!email || !password) {
+      setError('Email and password are required')
+      return
+    }
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      })
+
+      if (error) {
+        setError(error.message)
+        return
+      }
+
+      // Set cookies upon successful signup
+      if (data.user) {
+        setUserCookies(data)
+        
+        // Optional: Create a user profile in Supabase
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({
+            id: data.user.id,
+            email: data.user.email,
+            created_at: new Date().toISOString()
+          })
+
+        if (profileError) {
+          console.error('Error creating profile:', profileError)
+        }
+
+        // Redirect or show success message
+        router.push('/dashboard')
+      }
+    } catch (err) {
+      setError('An unexpected error occurred')
+    }
+  }
+
+  const handleOAuthSignUp = async (provider: Provider) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+      })
+
+      if (error) {
+        setError(error.message)
+        return
+      }
+
+      // Supabase OAuth returns a different response structure
+      if (data) {
+        // OAuth might redirect, so we may not always get user data here
+        // You might want to check the session after redirect
+        console.log('OAuth Signup Data:', data)
+        
+        // Optional: Create a user profile if you have user info
+        if (data.user) {
+          setUserCookies({ user: data.user })
+          
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+              id: data.user.id,
+              email: data.user.email,
+              created_at: new Date().toISOString()
+            })
+
+          if (profileError) {
+            console.error('Error creating profile:', profileError)
+          }
+
+          router.push('/dashboard')
+        } else {
+          // For OAuth, the actual user data might be retrieved after redirect
+          router.push('/dashboard')
+        }
+      }
+    } catch (err) {
+      setError('OAuth signup failed')
+    }
+  }
+
   return (
-    <div className="bg-[#0A0A0B] text-white p-4" style={{width:window.innerWidth>700?"30%":"100%", marginLeft:window.innerWidth>700?"35%":"0%", borderRadius:window.innerWidth>700?"8vh":"0vh"}}>
+    <div 
+      className="bg-[#0A0A0B] text-white p-4" 
+      style={{
+        width: typeof window !== 'undefined' && window.innerWidth > 700 ? "30%" : "100%", 
+        marginLeft: typeof window !== 'undefined' && window.innerWidth > 700 ? "35%" : "0%", 
+        borderRadius: typeof window !== 'undefined' && window.innerWidth > 700 ? "8vh" : "0vh"
+      }}
+    >
       {/* Create Account Section */}
       <div className="space-y-6 bg-[#111113] rounded-lg p-6 mb-4">
         <div className="space-y-2">
@@ -14,10 +136,17 @@ export default function CreateAccount() {
           <p className="text-gray-400">Enter your email below to create your account</p>
         </div>
 
+        {error && (
+          <div className="text-red-500 text-sm mb-4">
+            {error}
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-4">
           <Button 
             variant="outline" 
             className="bg-[#1C1C1E] border-none text-white hover:bg-[#2C2C2E]"
+            onClick={() => handleOAuthSignUp('github')}
           >
             <Github className="mr-2 h-4 w-4" />
             GitHub
@@ -25,6 +154,7 @@ export default function CreateAccount() {
           <Button 
             variant="outline" 
             className="bg-[#1C1C1E] border-none text-white hover:bg-[#2C2C2E]"
+            onClick={() => handleOAuthSignUp('google')}
           >
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
               <path
@@ -66,6 +196,8 @@ export default function CreateAccount() {
               id="email"
               placeholder="m@example.com"
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="bg-[#1C1C1E] border-none text-white placeholder:text-gray-400"
             />
           </div>
@@ -76,16 +208,20 @@ export default function CreateAccount() {
             <Input
               id="password"
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="bg-[#1C1C1E] border-none text-white"
             />
           </div>
         </div>
 
-        <Button className="w-full bg-purple-600 hover:bg-purple-700">
+        <Button 
+          className="w-full bg-purple-600 hover:bg-purple-700"
+          onClick={handleEmailSignUp}
+        >
           Create account
         </Button>
       </div>
     </div>
   )
 }
-
