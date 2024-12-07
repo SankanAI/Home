@@ -1,9 +1,9 @@
 "use client"
 
-import React, { useState } from 'react';
-import { z } from "zod"
-import { zodResolver } from "@hookform/form-handler/zod"
-import { useForm } from "react-hook-form"
+import React from 'react';
+import { useForm, SubmitHandler } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -39,37 +39,25 @@ import {
   AccordionItem, 
   AccordionTrigger 
 } from "@/components/ui/accordion"
-import { toast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 
-// Zod Validation Schema
+// Zod Schema for Form Validation
 const feedbackFormSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  parentEmail: z.string().email({
-    message: "Please enter a valid parent email address.",
-  }).optional(),
-  age: z.coerce.number().min(6, {
-    message: "You must be at least 6 years old.",
-  }).max(18, {
-    message: "You must be 18 or younger.",
-  }),
-  courseInterests: z.array(z.string()).min(1, {
-    message: "Please select at least one course of interest.",
-  }),
-  overallExperience: z.enum(["1", "2", "3", "4", "5"], {
-    required_error: "Please rate your overall experience.",
+  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
+  email: z.string().email({ message: "Please enter a valid email address" }),
+  parentEmail: z.string().email({ message: "Please enter a valid parent email" }).optional(),
+  age: z.number().min(6, { message: "Age must be at least 6" }).max(18, { message: "Age must be 18 or younger" }),
+  courseInterests: z.array(z.string()).min(1, { message: "Please select at least one course" }),
+  overallExperience: z.enum(["1", "2", "3", "4", "5"], { 
+    errorMap: () => ({ message: "Please rate your overall experience" }) 
   }),
   challengeLevel: z.enum(["TOO_EASY", "JUST_RIGHT", "CHALLENGING", "TOO_DIFFICULT"], {
-    required_error: "Please select a challenge level.",
+    errorMap: () => ({ message: "Please select a challenge level" })
   }),
   suggestions: z.string().optional(),
   wouldRecommend: z.enum(["YES", "NO"], {
-    required_error: "Please indicate if you would recommend our courses.",
-  }),
+    errorMap: () => ({ message: "Please indicate if you would recommend our courses" })
+  })
 });
 
 // Course Interest Options
@@ -81,27 +69,29 @@ const COURSE_INTERESTS = [
   { id: "problem_solving", label: "Problem Solving" },
 ];
 
-export function FeedbackForm() {
-  // Define the form
+export default function FeedbackForm() {
+  const { toast } = useToast()
+
+  // Use Zod for type inference and validation
   const form = useForm<z.infer<typeof feedbackFormSchema>>({
     resolver: zodResolver(feedbackFormSchema),
     defaultValues: {
       name: "",
       email: "",
       parentEmail: "",
-      age: undefined,
+      age: 0,
       courseInterests: [],
-      overallExperience: undefined,
-      challengeLevel: undefined,
+      overallExperience: "3",
+      challengeLevel: "JUST_RIGHT",
       suggestions: "",
-      wouldRecommend: undefined,
+      wouldRecommend: "YES",
     },
   });
 
   // Form submission handler
-  function onSubmit(data: z.infer<typeof feedbackFormSchema>) {
+  const onSubmit: SubmitHandler<z.infer<typeof feedbackFormSchema>> = async (data) => {
     try {
-      // Simulate form submission
+      // Simulate API submission or actual form processing
       console.log("Feedback Submitted:", data);
       
       // Show success toast
@@ -156,14 +146,19 @@ export function FeedbackForm() {
                     <FormField
                       control={form.control}
                       name="age"
-                      render={({ field }) => (
+                      render={({ field: { onChange, value, ...rest } }) => (
                         <FormItem>
                           <FormLabel>Age</FormLabel>
                           <FormControl>
                             <Input 
                               type="number" 
                               placeholder="Your age" 
-                              {...field} 
+                              {...rest}
+                              value={value === 0 ? '' : value}
+                              onChange={(e) => {
+                                const numValue = e.target.value === '' ? 0 : Number(e.target.value);
+                                onChange(numValue);
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
@@ -227,17 +222,17 @@ export function FeedbackForm() {
                               render={({ field }) => {
                                 return (
                                   <FormItem
-                                    key={item.id}
                                     className="flex flex-row items-start space-x-3 space-y-0"
                                   >
                                     <FormControl>
                                       <Checkbox
                                         checked={field.value?.includes(item.id)}
                                         onCheckedChange={(checked) => {
+                                          const currentInterests = field.value || [];
                                           return checked
-                                            ? field.onChange([...field.value, item.id])
+                                            ? field.onChange([...currentInterests, item.id])
                                             : field.onChange(
-                                                field.value?.filter(
+                                                currentInterests.filter(
                                                   (value) => value !== item.id
                                                 )
                                               )

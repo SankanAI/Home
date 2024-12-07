@@ -16,8 +16,8 @@ export default function AppAppBar() {
     { label: 'Testimonials', href: '#testimonials' },
     { label: 'Highlights', href: '#highlights' },
     { label: 'Pricing', href: '#pricing' },
-    { label: 'FAQ', href: '#faq' },
-    { label: 'Blog', href: '/blog' },
+    { label: 'Meet the Dev', href: '' },
+    { label: 'Feedback', href: '/UI/FeedbackForm' },
   ];
 
   return (
@@ -47,13 +47,13 @@ export default function AppAppBar() {
 
             <div className="flex items-center space-x-2">
               <Link
-                href="/signin"
+                href="/Authentication/login"
                 className="text-sm text-gray-600 hover:text-black px-3 py-2 rounded-md"
               >
-                Sign In
+                Join
               </Link>
               <Link
-                href="/signup"
+                href="/Authentication/Signup"
                 className="text-sm bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors"
               >
                 Sign Up
