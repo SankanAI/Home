@@ -38,7 +38,8 @@ export default function AppAppBar() {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="text-sm text-white hover:text-black transition-colors px-3 py-2 rounded-md"
+                  style={{color:window.innerWidth>600?"white":"black"}}
+                  className="text-sm text-white hover:text-black px-3 py-2 rounded-md"
                 >
                   {item.label}
                 </Link>
@@ -74,7 +75,7 @@ export default function AppAppBar() {
 
         {/* Mobile Drawer */}
         {isMenuOpen && (
-          <div className="fixed inset-0 top-24 bg-white z-40 md:hidden">
+          <div className="fixed inset-0 top-24 bg-black z-40 md:hidden">
             <div className="container mx-auto px-4 py-6">
               <div className="flex flex-col space-y-4">
                 {menuItems.map((item) => (
@@ -98,7 +99,7 @@ export default function AppAppBar() {
                   <Link
                     href="/Authentication/Signup"
                     onClick={toggleMenu}
-                    className="block text-lg bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors text-center"
+                    className="block text-lg bg-[#7e22ce] text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors text-center"
                   >
                     Sign Up
                   </Link>

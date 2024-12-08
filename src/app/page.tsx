@@ -113,8 +113,8 @@ export default function Home() {
         <li style={{width:window.innerWidth>1023?'60%':'100%', display:'inline-flex', padding:window.innerWidth>1023?'10vh':'3vh', textAlign:window.innerWidth>1023?"left":"center"}}>
           <div>
             <p className=" tracking-tighter text-6xl sm:text-6xl md:text-6xl  lg:text-6xl xl:text-9xl text-gray-900 dark:text-white mb-4 pt-5 text-gray-50" style={{color:'white'}}>Sankan AI</p>
-            <h1 className="tracking-tight text-1xl sm:text-2xl md:text-2xl  lg:text-2xl xl:text-3xl text-gray-900 dark:text-white mb-4 text-gray-50" style={{ color:'white'}}>Unlock 
-            <span style={{padding:'0.3vh', paddingLeft:'1vh', paddingRight:'1vh', borderRadius:'2vh', background:'blue', cursor:'pointer'}} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>Creativity</span>, One Pixel at a Time</h1>
+            <h1 className="tracking-tight text-1xl sm:text-2xl md:text-2xl  lg:text-2xl xl:text-3xl text-gray-900 dark:text-white mb-4 text-gray-50" style={{ color:'white'}}>Unlock
+            <span style={{padding:'0.3vh', paddingLeft:'1vh', paddingRight:'1vh', borderRadius:'2vh', background:'blue', cursor:'pointer', border:'5px solid black'}} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>Creativity</span>, One Pixel at a Time</h1>
             <RainbowButton className="my-4">Join Waitlist</RainbowButton>
             {position && (
         <div
