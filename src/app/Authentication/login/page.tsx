@@ -33,7 +33,7 @@ export default function CreateAccount() {
     }
   }
 
-  const handleEmailSignUp = async () => {
+  const handleEmailSignIn = async () => {
     // Basic email and password validation
     if (!email || !password) {
       setError('Email and password are required')
@@ -41,9 +41,9 @@ export default function CreateAccount() {
     }
 
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password,
+        password
       })
 
       if (error) {
@@ -54,7 +54,7 @@ export default function CreateAccount() {
       // Set cookies upon successful signup
       if (data.user) {
         setUserCookies(data)
-        
+        console.log(data)
         // Optional: Create a user profile in Supabase
         const { error: profileError } = await supabase
           .from('profiles')
@@ -69,7 +69,7 @@ export default function CreateAccount() {
         }
 
         // Redirect or show success message
-        router.push('/dashboard')
+        router.push('/')
       }
     } catch (err) {
       setError('An unexpected error occurred')
@@ -217,7 +217,7 @@ export default function CreateAccount() {
 
         <Button 
           className="w-full bg-purple-600 hover:bg-purple-700"
-          onClick={handleEmailSignUp}
+          onClick={handleEmailSignIn}
         >
           Create account
         </Button>

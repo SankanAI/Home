@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import AppAppBar from "./UI/AppAppBar"; // Adjust path as needed
+import Footer from "./UI/Footer";
 
 export const dm_sans_init = DM_Sans({
   subsets: ['latin'],
@@ -27,9 +28,7 @@ export default function RootLayout({
         <main className="mt-24 container mx-auto px-4">
           {children}
         </main>
-        <footer className="mt-10 py-6 text-center bg-gray-100">
-          © {new Date().getFullYear()} Your Company Name
-        </footer>
+      <Footer/>
       </body>
     </html>
   );

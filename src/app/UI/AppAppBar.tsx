@@ -2,7 +2,9 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
+import Sankan from "/public/Sankan.svg";
 
 export default function AppAppBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,10 +14,8 @@ export default function AppAppBar() {
   };
 
   const menuItems = [
-    { label: 'Features', href: '#features' },
-    { label: 'Testimonials', href: '#testimonials' },
-    { label: 'Highlights', href: '#highlights' },
-    { label: 'Pricing', href: '#pricing' },
+    { label: 'Home', href: '/' },
+    { label: 'Twitter', href: 'https://twitter.com/' },
     { label: 'Meet the Dev', href: '' },
     { label: 'Feedback', href: '/UI/FeedbackForm' },
   ];
@@ -27,7 +27,7 @@ export default function AppAppBar() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="text-xl font-bold">
-              Sankan AI
+               <Image alt="Logo" src={Sankan} width={45} height={45} style={{borderRadius:40, color:'white', padding:'3px', border:'2px solid lightgrey'}}/>
             </Link>
           </div>
 
@@ -38,7 +38,7 @@ export default function AppAppBar() {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="text-sm text-gray-600 hover:text-black transition-colors px-3 py-2 rounded-md"
+                  className="text-sm text-white hover:text-black transition-colors px-3 py-2 rounded-md"
                 >
                   {item.label}
                 </Link>
@@ -48,7 +48,7 @@ export default function AppAppBar() {
             <div className="flex items-center space-x-2">
               <Link
                 href="/Authentication/login"
-                className="text-sm text-gray-600 hover:text-black px-3 py-2 rounded-md"
+                className="text-sm text-white hover:text-black px-3 py-2 rounded-md"
               >
                 Join
               </Link>
@@ -65,7 +65,7 @@ export default function AppAppBar() {
           <div className="md:hidden">
             <button 
               onClick={toggleMenu}
-              className="text-gray-600 hover:text-black"
+              className="text-white hover:text-black"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -82,21 +82,21 @@ export default function AppAppBar() {
                     key={item.label}
                     href={item.href}
                     onClick={toggleMenu}
-                    className="text-lg text-gray-600 hover:text-black"
+                    className="text-lg text-white hover:text-black"
                   >
                     {item.label}
                   </Link>
                 ))}
                 <div className="border-t pt-4 space-y-4">
                   <Link
-                    href="/signin"
+                    href="/Authentication/login"
                     onClick={toggleMenu}
-                    className="block text-lg text-gray-600 hover:text-black"
+                    className="block text-lg text-white hover:text-black"
                   >
                     Sign In
                   </Link>
                   <Link
-                    href="/signup"
+                    href="/Authentication/Signup"
                     onClick={toggleMenu}
                     className="block text-lg bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors text-center"
                   >
