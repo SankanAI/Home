@@ -7,6 +7,7 @@ import AppleCardsCarouselDemo from "./AppleCardsCarouselDemo";
 import { useRouter } from "next/router";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import More from "./UI/More";
+import {useState, useEffect} from 'react';
 
 const slugs = [
   "typescript",
@@ -44,42 +45,61 @@ const slugs = [
  const testimonials = [
     {
       quote:
-        "The attention to detail and innovative features have completely transformed our workflow. This is exactly what we've been looking for.",
-      name: "Sarah Chen",
-      designation: "Product Manager at TechFlow",
-      src: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=3560&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Empowering minds to analyze, evaluate, and solve complex problems with logic and creativity, enabling students to make informed decisions in an increasingly complex world",
+      name: "Critical Thinking",
+      designation: "Empowering minds to analyze, evaluate, and solve",
+      src: "https://images.unsplash.com/photo-1620662736427-b8a198f52a4d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
       quote:
-        "Implementation was seamless and the results exceeded our expectations. The platform's flexibility is remarkable.",
-      name: "Michael Rodriguez",
-      designation: "CTO at InnovateSphere",
-      src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Developing the mental flexibility to learn, unlearn, and relearn, embracing change as an opportunity for growth and staying resilient in a rapidly evolving global landscape.",
+      name: "Adaptiblity",
+      designation: "Developing the mental flexibility to learn, unlearn, and relearn, embracing change",
+      src: "https://images.unsplash.com/photo-1718823995346-23ee50de8abd?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
       quote:
-        "This solution has significantly improved our team's productivity. The intuitive interface makes complex tasks simple.",
-      name: "Emily Watson",
-      designation: "Operations Director at CloudScale",
-      src: "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Equipping young minds with the knowledge to understand money management, investing, budgeting, and making smart financial decisions.",
+      name: "Financial literacy",
+      designation: "Equipping young minds with the knowledge to understand money",
+      src: "https://images.unsplash.com/photo-1640161704729-cbe966a08476?q=80&w=2072&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
       quote:
-        "Outstanding support and robust features. It's rare to find a product that delivers on all its promises.",
-      name: "James Kim",
-      designation: "Engineering Lead at DataPro",
-      src: "https://images.unsplash.com/photo-1636041293178-808a6762ab39?q=80&w=3464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "Mastering the art of clear, effective, and empathetic interaction across diverse platforms, cultures, and contexts, essential for collaboration, leadership, and personal relationships",
+      name: "Communication",
+      designation: "Mastering the art of clear, effective, and empathetic interaction",
+      src: "https://images.unsplash.com/photo-1543269865-cbf427effbad?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Q29tbXVuaWNhdGlvbnxlbnwwfHwwfHx8MA%3D%3D",
     },
     {
       quote:
-        "The scalability and performance have been game-changing for our organization. Highly recommend to any growing business.",
-      name: "Lisa Thompson",
-      designation: "VP of Technology at FutureNet",
-      src: "https://images.unsplash.com/photo-1624561172888-ac93c696e10c?q=80&w=2592&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "The universal language of innovation, teaching students to transform ideas into digital solutions, develop logical reasoning, and become creators rather than just consumers of technology",
+      name: "Programming",
+      designation: "The universal language of innovation, teaching students to transform ideas into digital solutions",
+      src: "https://images.unsplash.com/photo-1599507593499-a3f7d7d97667?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
   ];
 
 export default function Home() {
+
+    const [hovered, setHovered] = useState(false);
+    const [position, setPosition] = useState<{ x: number; y: number } | null>(
+      null
+    );
+  
+    const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      setHovered(true);
+      setPosition({
+        x: rect.right + 10, // Place the HTML content 10px to the right of the hovered element
+        y: rect.top,
+      });
+    };
+  
+    const handleMouseLeave = () => {
+      setHovered(false);
+      setPosition(null);
+    };
  
   return (
       <main style={{width:window.innerWidth>1023?'90%':'100%', marginLeft:window.innerWidth>1023?'5%':'0%', background:'rgb(2 6 23)'}}>
@@ -93,9 +113,21 @@ export default function Home() {
         <li style={{width:window.innerWidth>1023?'60%':'100%', display:'inline-flex', padding:window.innerWidth>1023?'10vh':'3vh', textAlign:window.innerWidth>1023?"left":"center"}}>
           <div>
             <p className=" tracking-tighter text-6xl sm:text-6xl md:text-6xl  lg:text-6xl xl:text-9xl text-gray-900 dark:text-white mb-4 pt-5 text-gray-50" style={{color:'white'}}>Sankan AI</p>
-            <h1 className="tracking-tight text-1xl sm:text-2xl md:text-2xl  lg:text-2xl xl:text-3xl text-gray-900 dark:text-white mb-4 text-gray-50" style={{ color:'white'}}>Unlock Creativity, One Pixel at a Time</h1>
-            <More/>
-            <RainbowButton>Join</RainbowButton>
+            <h1 className="tracking-tight text-1xl sm:text-2xl md:text-2xl  lg:text-2xl xl:text-3xl text-gray-900 dark:text-white mb-4 text-gray-50" style={{ color:'white'}}>Unlock 
+            <span style={{padding:'0.3vh', paddingLeft:'1vh', paddingRight:'1vh', borderRadius:'2vh', background:'blue', cursor:'pointer'}} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>Creativity</span>, One Pixel at a Time</h1>
+            <RainbowButton className="my-4">Join Waitlist</RainbowButton>
+            {position && (
+        <div
+          className="absolute bg-gray-100 text-black p-3 rounded shadow-lg"
+          style={{
+            top: position.y,
+            left: position.x,
+            transition:'ease-in-out 1s'
+          }}
+        >
+         <More/>
+        </div>
+      )}
           </div>
         </li>
       </div>
@@ -107,7 +139,7 @@ export default function Home() {
         <div style={{display:'inline-flex', width:window.innerWidth>1023?'50%':'100%', padding:window.innerWidth>1000?"8vh":"0vh"}}>
             <h1 className=" tracking-tighter text-7xl text-gray-50 "  style={{width:'100%', textAlign:window.innerWidth>1023?"left":"center", fontSize:window.innerWidth>1023?'70px':'50px'}}>
               Sankan AI <br/>
-              <p className="tracking-tight text-3xl dark:text-white mb-4 text-gray-50 mt:10" style={{width:'100%', fontSize:window.innerWidth>1023?'30px':'25px'}}>Today we are creating platform for Kids Coding, But we will be more</p>
+              <p className="tracking-tight text-3xl dark:text-white mb-4 text-gray-50 mt:10" style={{width:'100%', fontSize:window.innerWidth>1023?'23px':'18px'}}>Spark is a revolutionary learning platform that transforms education into an adventure, blending critical thinking, coding, financial wisdom, communication skills, and adaptability through gamified, interactive challenges that make learning irresistibly fun for the next generation of innovators.</p>
             </h1>
         </div>
         <div style={{ display:'inline-flex',width:window.innerWidth>1023?'45%':'90%',marginLeft:window.innerWidth>1000?'0%':'5%', marginTop:'3vh'}}>

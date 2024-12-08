@@ -40,8 +40,9 @@ export default function More() {
   const CurrentSkill = skills[currentSkillIndex];
 
   return (
-    <div className="flex justify-left items-center p-4">
+    <div className="flex justify-left items-center p-0">
       <button 
+        style={{transition:'ease-in-out 1s'}}
         className="flex items-center justify-center 
         bg-slate-700 text-white 
         px-6 py-3 
