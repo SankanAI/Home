@@ -140,11 +140,8 @@ export default function ShashankPortfolio() {
                     Interested in building something impactful? Reach out and let's discuss your ideas.
                   </DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <Input placeholder="Your Name" />
-                  <Input placeholder="Your Email" type="email" />
-                  <Textarea placeholder="Tell me about your project or collaboration idea" />
-                  <Button type="submit" className="w-full">Send Collaboration Request</Button>
+                <div className="grid gap-4 py-4 text-black">
+                    Message me on Twitter
                 </div>
               </DialogContent>
             </Dialog>

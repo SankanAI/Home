@@ -37,11 +37,11 @@ export default function Footer() {
         {/* Product Links */}
         <div className="hidden sm:flex flex-col space-y-2 text-base" style={{textAlign:'right'}}>
           <h5 className="text-2xl font-semibold">Product</h5>
-          <Link href="#" className="text-base text-slate-50">Features</Link>
-          <Link href="#" className="text-base text-slate-50">Feedback</Link>
-          <Link href="#" className="text-base text-slate-50">Provide Ideas</Link>
-          <Link href="#" className="text-base text-slate-50">Meet the Dev</Link>
-          <Link href="#" className="text-base text-slate-50">About</Link>
+          <Link href="/" className="text-base text-slate-50">Features</Link>
+          <Link href="/UI/FeedbackForm" className="text-base text-slate-50">Feedback</Link>
+          <Link href="/UI/FeedbackForm" className="text-base text-slate-50">Provide Ideas</Link>
+          <Link href="/Company/Meet_Dev" className="text-base text-slate-50">Meet the Dev</Link>
+          <Link href="/Company/About" className="text-base text-slate-50">About</Link>
         </div>
 
       </div>
@@ -49,15 +49,15 @@ export default function Footer() {
       {/* Bottom Section */}
       <div className="border-t mt-8 pt-4 flex flex-col sm:flex-row justify-between items-center">
         <div className="flex items-center space-x-2 mb-4 sm:mb-0">
-          <Link href="#" className="text-base text-slate-50">Privacy Policy</Link>
+          <Link href="/Company/Privacy" className="text-base text-slate-50">Privacy Policy</Link>
           <span className="text-slate-50">•</span>
-          <Link href="#" className="text-base text-slate-50">Terms of Service</Link>
+          <Link href="/Company/Terms_Conditions" className="text-base text-slate-50">Terms of Service</Link>
           <Copyright />
         </div>
 
         <div className="flex space-x-2">
           <Link 
-            href="https://github.com/mui" 
+            href="https://github.com/its-shashanky" 
             className="text-slate-50 hover:text-foreground"
             aria-label="GitHub"
           >

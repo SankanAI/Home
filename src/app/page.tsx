@@ -4,7 +4,7 @@ import IconCloud from "@/components/ui/icon-cloud";
 import { AnimatedBeamMultipleOutputDemo } from "./AnimatedBeamMultipleOutputDemo";
 import RetroGrid from "@/components/ui/retro-grid";
 import AppleCardsCarouselDemo from "./AppleCardsCarouselDemo";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import More from "./UI/More";
 import {useState, useEffect} from 'react';
@@ -81,7 +81,7 @@ const slugs = [
   ];
 
 export default function Home() {
-
+    const router = useRouter();
     const [hovered, setHovered] = useState(false);
     const [position, setPosition] = useState<{ x: number; y: number } | null>(
       null
@@ -115,7 +115,7 @@ export default function Home() {
             <p className=" tracking-tighter text-6xl sm:text-6xl md:text-6xl  lg:text-6xl xl:text-9xl text-gray-900 dark:text-white mb-4 pt-5 text-gray-50" style={{color:'white'}}>Sankan AI</p>
             <h1 className="tracking-tight text-1xl sm:text-2xl md:text-2xl  lg:text-2xl xl:text-3xl text-gray-900 dark:text-white mb-4 text-gray-50" style={{ color:'white'}}>Unlock
             <span style={{padding:'0.3vh', paddingLeft:'1vh', paddingRight:'1vh', borderRadius:'2vh', background:'blue', cursor:'pointer', border:'5px solid black'}} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>Creativity</span>, One Pixel at a Time</h1>
-            <RainbowButton className="my-4">Join Waitlist</RainbowButton>
+            <RainbowButton className="my-4" onClick={()=>{router.push("/Authentication/login")}}>Join Waitlist</RainbowButton>
             {position && (
         <div
           className="absolute bg-gray-100 text-black p-3 rounded shadow-lg"

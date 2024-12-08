@@ -1,10 +1,7 @@
 "use client"
 
-import React from 'react';
-import { useForm, SubmitHandler } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-
+import React, { useState } from 'react';
+import { createClient } from '@supabase/supabase-js'
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -39,26 +36,8 @@ import {
   AccordionItem, 
   AccordionTrigger 
 } from "@/components/ui/accordion"
-import { useToast } from "@/hooks/use-toast"
-
-// Zod Schema for Form Validation
-const feedbackFormSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  parentEmail: z.string().email({ message: "Please enter a valid parent email" }).optional(),
-  age: z.number().min(6, { message: "Age must be at least 6" }).max(18, { message: "Age must be 18 or younger" }),
-  courseInterests: z.array(z.string()).min(1, { message: "Please select at least one course" }),
-  overallExperience: z.enum(["1", "2", "3", "4", "5"], { 
-    errorMap: () => ({ message: "Please rate your overall experience" }) 
-  }),
-  challengeLevel: z.enum(["TOO_EASY", "JUST_RIGHT", "CHALLENGING", "TOO_DIFFICULT"], {
-    errorMap: () => ({ message: "Please select a challenge level" })
-  }),
-  suggestions: z.string().optional(),
-  wouldRecommend: z.enum(["YES", "NO"], {
-    errorMap: () => ({ message: "Please indicate if you would recommend our courses" })
-  })
-});
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import Cookies from 'js-cookie'
 
 // Course Interest Options
 const COURSE_INTERESTS = [
@@ -70,47 +49,148 @@ const COURSE_INTERESTS = [
 ];
 
 export default function FeedbackForm() {
-  const { toast } = useToast()
+  // State management
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [parentEmail, setParentEmail] = useState('');
+  const [age, setAge] = useState(0);
+  const [courseInterests, setCourseInterests] = useState<string[]>([]);
+  const [overallExperience, setOverallExperience] = useState('3');
+  const [challengeLevel, setChallengeLevel] = useState('JUST_RIGHT');
+  const [suggestions, setSuggestions] = useState('');
+  const [wouldRecommend, setWouldRecommend] = useState('YES');
+  
+  // Dialog state for feedback submission messages
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState('');
 
-  // Use Zod for type inference and validation
-  const form = useForm<z.infer<typeof feedbackFormSchema>>({
-    resolver: zodResolver(feedbackFormSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      parentEmail: "",
-      age: 0,
-      courseInterests: [],
-      overallExperience: "3",
-      challengeLevel: "JUST_RIGHT",
-      suggestions: "",
-      wouldRecommend: "YES",
-    },
-  });
+  // Supabase client (replace with your actual Supabase URL and API key)
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
-  // Form submission handler
-  const onSubmit: SubmitHandler<z.infer<typeof feedbackFormSchema>> = async (data) => {
-    try {
-      // Simulate API submission or actual form processing
-      console.log("Feedback Submitted:", data);
-      
-      // Show success toast
-      toast({
-        title: "Feedback Submitted",
-        description: "Thank you for your valuable feedback!",
-      });
+  // Form validation
+  const validateForm = () => {
+    const errors: string[] = [];
 
-      // Reset form after successful submission
-      form.reset();
-    } catch (error) {
-      // Handle submission error
-      toast({
-        title: "Submission Error",
-        description: "There was an issue submitting your feedback. Please try again.",
-        variant: "destructive",
-      });
+    if (name.trim().length < 2) {
+      errors.push("Name must be at least 2 characters");
     }
-  }
+
+    if (!email.includes('@')) {
+      errors.push("Please enter a valid email address");
+    }
+
+    if (age < 6 || age > 18) {
+      errors.push("Age must be between 6 and 18");
+    }
+
+    if (courseInterests.length === 0) {
+      errors.push("Please select at least one course");
+    }
+
+    return errors;
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validate form
+    const validationErrors = validateForm();
+    if (validationErrors.length > 0) {
+      setDialogMessage(validationErrors.join('\n'));
+      setDialogOpen(true);
+      return;
+    }
+
+    try {
+      // 1. Check if cookie with userid exists 
+      const userId = Cookies.get('userId');
+      if (!userId) {
+        setDialogMessage('User ID not found. Please log in.');
+        setDialogOpen(true);
+        return;
+      }
+
+      // 2. Check if user exists in database
+      const { data: userData, error: userError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (userError || !userData) {
+        setDialogMessage('User not found in database.');
+        setDialogOpen(true);
+        return;
+      }
+
+      // 3. Check if user has already submitted feedback
+      const { data: existingFeedback, error: feedbackError } = await supabase
+        .from('feedback')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (existingFeedback) {
+        setDialogMessage('You have already submitted feedback. You cannot submit again.');
+        setDialogOpen(true);
+        return;
+      }
+
+      // 4. If all checks pass, submit feedback
+      const { error } = await supabase.from('feedback').insert({
+        user_id: userId,
+        name,
+        email,
+        parent_email: parentEmail,
+        age,
+        course_interests: courseInterests,
+        overall_experience: overallExperience,
+        challenge_level: challengeLevel,
+        suggestions,
+        would_recommend: wouldRecommend
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      // Reset form and show success message
+      resetForm();
+      setDialogMessage('Feedback submitted successfully!');
+      setDialogOpen(true);
+
+    } catch (error) {
+      console.log('Submission error:', error);
+      setDialogMessage('An error occurred while submitting feedback.');
+      setDialogOpen(true);
+    }
+  };
+
+  // Reset form fields
+  const resetForm = () => {
+    setName('');
+    setEmail('');
+    setParentEmail('');
+    setAge(0);
+    setCourseInterests([]);
+    setOverallExperience('3');
+    setChallengeLevel('JUST_RIGHT');
+    setSuggestions('');
+    setWouldRecommend('YES');
+  };
+
+  // Handle course interest toggle
+  const toggleCourseInterest = (courseId: string) => {
+    setCourseInterests(prev => 
+      prev.includes(courseId) 
+        ? prev.filter(id => id !== courseId)
+        : [...prev, courseId]
+    );
+  };
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
@@ -122,262 +202,142 @@ export default function FeedbackForm() {
       </CardHeader>
       
       <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <Accordion type="single" collapsible>
-              {/* Personal Information Section */}
-              <AccordionItem value="personal-info">
-                <AccordionTrigger>Personal Information</AccordionTrigger>
-                <AccordionContent>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Full Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter your full name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="age"
-                      render={({ field: { onChange, value, ...rest } }) => (
-                        <FormItem>
-                          <FormLabel>Age</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              placeholder="Your age" 
-                              {...rest}
-                              value={value === 0 ? '' : value}
-                              onChange={(e) => {
-                                const numValue = e.target.value === '' ? 0 : Number(e.target.value);
-                                onChange(numValue);
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter your email" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="parentEmail"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Parent/Guardian Email</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="Parent's email (optional)" 
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Personal Information Section */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label>Full Name</label>
+              <Input 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your full name"
+              />
+            </div>
+            <div>
+              <label>Age</label>
+              <Input 
+                type="number"
+                value={age === 0 ? '' : age}
+                onChange={(e) => setAge(e.target.value ? Number(e.target.value) : 0)}
+                placeholder="Your age"
+              />
+            </div>
+            <div>
+              <label>Email</label>
+              <Input 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+              />
+            </div>
+            <div>
+              <label>Parent/Guardian Email (Optional)</label>
+              <Input 
+                value={parentEmail}
+                onChange={(e) => setParentEmail(e.target.value)}
+                placeholder="Parent's email"
+              />
+            </div>
+          </div>
+
+          {/* Course Interests */}
+          <div>
+            <label>Courses of Interest</label>
+            <div className="grid md:grid-cols-3 gap-4">
+              {COURSE_INTERESTS.map((course) => (
+                <div key={course.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    checked={courseInterests.includes(course.id)}
+                    onCheckedChange={() => toggleCourseInterest(course.id)}
+                  />
+                  <label>{course.label}</label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Experience Ratings */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label>Overall Experience Rating</label>
+              <RadioGroup 
+                value={overallExperience} 
+                onValueChange={setOverallExperience}
+                className="flex space-x-4"
+              >
+                {['1', '2', '3', '4', '5'].map(rating => (
+                  <div key={rating} className="flex items-center space-x-2">
+                    <RadioGroupItem value={rating} />
+                    <label>{rating}</label>
                   </div>
-                </AccordionContent>
-              </AccordionItem>
+                ))}
+              </RadioGroup>
+            </div>
+            <div>
+              <label>Challenge Level</label>
+              <Select 
+                value={challengeLevel}
+                onValueChange={setChallengeLevel}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select challenge level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="TOO_EASY">Too Easy</SelectItem>
+                  <SelectItem value="JUST_RIGHT">Just Right</SelectItem>
+                  <SelectItem value="CHALLENGING">Challenging</SelectItem>
+                  <SelectItem value="TOO_DIFFICULT">Too Difficult</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-              {/* Course Interests Section */}
-              <AccordionItem value="course-interests">
-                <AccordionTrigger>Course Interests</AccordionTrigger>
-                <AccordionContent>
-                  <FormField
-                    control={form.control}
-                    name="courseInterests"
-                    render={() => (
-                      <FormItem>
-                        <div className="mb-4">
-                          <FormLabel className="text-base">Courses of Interest</FormLabel>
-                          <FormDescription>
-                            Select the courses you're most interested in.
-                          </FormDescription>
-                        </div>
-                        <div className="grid md:grid-cols-3 gap-4">
-                          {COURSE_INTERESTS.map((item) => (
-                            <FormField
-                              key={item.id}
-                              control={form.control}
-                              name="courseInterests"
-                              render={({ field }) => {
-                                return (
-                                  <FormItem
-                                    className="flex flex-row items-start space-x-3 space-y-0"
-                                  >
-                                    <FormControl>
-                                      <Checkbox
-                                        checked={field.value?.includes(item.id)}
-                                        onCheckedChange={(checked) => {
-                                          const currentInterests = field.value || [];
-                                          return checked
-                                            ? field.onChange([...currentInterests, item.id])
-                                            : field.onChange(
-                                                currentInterests.filter(
-                                                  (value) => value !== item.id
-                                                )
-                                              )
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormLabel className="font-normal">
-                                      {item.label}
-                                    </FormLabel>
-                                  </FormItem>
-                                )
-                              }}
-                            />
-                          ))}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </AccordionContent>
-              </AccordionItem>
+          {/* Suggestions Section */}
+          <div>
+            <label>Additional Suggestions</label>
+            <Textarea
+              value={suggestions}
+              onChange={(e) => setSuggestions(e.target.value)}
+              placeholder="Share your thoughts on how we can improve..."
+            />
+          </div>
 
-              {/* Experience and Challenge Ratings */}
-              <AccordionItem value="experience-ratings">
-                <AccordionTrigger>Learning Experience</AccordionTrigger>
-                <AccordionContent>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="overallExperience"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Overall Experience Rating</FormLabel>
-                          <FormControl>
-                            <RadioGroup
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                              className="flex space-x-4"
-                            >
-                              {["1", "2", "3", "4", "5"].map(rating => (
-                                <FormItem key={rating} className="flex items-center space-x-2">
-                                  <FormControl>
-                                    <RadioGroupItem value={rating} />
-                                  </FormControl>
-                                  <FormLabel className="font-normal">
-                                    {rating}
-                                  </FormLabel>
-                                </FormItem>
-                              ))}
-                            </RadioGroup>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+          {/* Recommendation Section */}
+          <div>
+            <label>Would You Recommend Us?</label>
+            <RadioGroup 
+              value={wouldRecommend}
+              onValueChange={setWouldRecommend}
+              className="flex space-x-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="YES" />
+                <label>Yes</label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="NO" />
+                <label>No</label>
+              </div>
+            </RadioGroup>
+          </div>
 
-                    <FormField
-                      control={form.control}
-                      name="challengeLevel"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Challenge Level</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select challenge level" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="TOO_EASY">Too Easy</SelectItem>
-                              <SelectItem value="JUST_RIGHT">Just Right</SelectItem>
-                              <SelectItem value="CHALLENGING">Challenging</SelectItem>
-                              <SelectItem value="TOO_DIFFICULT">Too Difficult</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              {/* Suggestions and Recommendations */}
-              <AccordionItem value="suggestions">
-                <AccordionTrigger>Suggestions</AccordionTrigger>
-                <AccordionContent>
-                  <FormField
-                    control={form.control}
-                    name="suggestions"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Additional Suggestions</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Share your thoughts on how we can improve..."
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="wouldRecommend"
-                    render={({ field }) => (
-                      <FormItem className="mt-4">
-                        <FormLabel>Would You Recommend Us?</FormLabel>
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className="flex space-x-4"
-                          >
-                            <FormItem className="flex items-center space-x-2">
-                              <FormControl>
-                                <RadioGroupItem value="YES" />
-                              </FormControl>
-                              <FormLabel className="font-normal">Yes</FormLabel>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-2">
-                              <FormControl>
-                                <RadioGroupItem value="NO" />
-                              </FormControl>
-                              <FormLabel className="font-normal">No</FormLabel>
-                            </FormItem>
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-
-            <Button type="submit" className="w-full">Submit Feedback</Button>
-          </form>
-        </Form>
+          <Button type="submit" className="w-full">Submit Feedback</Button>
+        </form>
       </CardContent>
+
+      {/* Dialog for messages */}
+      {dialogOpen && (
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Feedback Submission</DialogTitle>
+              <DialogDescription>
+                {dialogMessage}
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      )}
     </Card>
-  )
+  );
 }
