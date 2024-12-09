@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { supabase } from '@/lib/supabase-client'
+import Cookies from 'js-cookie';
 
-
-export default function VerificationComponent() {
+export default function Signup() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [repassword, setRePassword] = useState('')
@@ -18,6 +18,13 @@ export default function VerificationComponent() {
     type: 'default'
   })
   const router = useRouter()
+
+
+//   useEffect(()=>{
+//     if(Cookies.get('userId')){
+//      router.push('/')
+//     }
+//  },[])
 
   const showToast = (title: string, description: string, type: 'default' | 'destructive' = 'default') => {
     setToast({ show: true, title, description, type })

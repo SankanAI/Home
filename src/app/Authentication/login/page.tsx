@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Github, Send } from 'lucide-react'
 import { supabase } from '@/lib/supabase-client'
 import Cookies from 'js-cookie'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Provider } from '@supabase/supabase-js'
 
@@ -33,6 +33,13 @@ export default function CreateAccount() {
     }
   }
 
+
+  // useEffect(()=>{
+  //    if(Cookies.get('userId')){
+  //     router.push('/')
+  //    }
+  // },[])
+
   const handleEmailSignIn = async () => {
     // Basic email and password validation
     if (!email || !password) {
@@ -56,17 +63,17 @@ export default function CreateAccount() {
         setUserCookies(data)
         console.log(data)
         // Optional: Create a user profile in Supabase
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .upsert({
-            id: data.user.id,
-            email: data.user.email,
-            created_at: new Date().toISOString()
-          })
+        // const { error: profileError } = await supabase
+        //   .from('profiles')
+        //   .upsert({
+        //     id: data.user.id,
+        //     email: data.user.email,
+        //     created_at: new Date().toISOString()
+        //   })
 
-        if (profileError) {
-          console.error('Error creating profile:', profileError)
-        }
+        // if (profileError) {
+        //   console.error('Error creating profile:', profileError)
+        // }
 
         // Redirect or show success message
         router.push('/')
@@ -77,47 +84,48 @@ export default function CreateAccount() {
   }
 
   const handleOAuthSignUp = async (provider: Provider) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider,
-      })
+    alert("Not Available as of Now")
+    // try {
+    //   const { data, error } = await supabase.auth.signInWithOAuth({
+    //     provider,
+    //   })
 
-      if (error) {
-        setError(error.message)
-        return
-      }
+    //   if (error) {
+    //     setError(error.message)
+    //     return
+    //   }
 
-      // Supabase OAuth returns a different response structure
-      if (data) {
-        // OAuth might redirect, so we may not always get user data here
-        // You might want to check the session after redirect
-        console.log('OAuth Signup Data:', data)
+    //   // Supabase OAuth returns a different response structure
+    //   if (data) {
+    //     // OAuth might redirect, so we may not always get user data here
+    //     // You might want to check the session after redirect
+    //     console.log('OAuth Signup Data:', data)
         
-        // Optional: Create a user profile if you have user info
-        if (data.user) {
-          setUserCookies({ user: data.user })
+    //     // Optional: Create a user profile if you have user info
+    //     if (data.user) {
+    //       setUserCookies({ user: data.user })
           
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .upsert({
-              id: data.user.id,
-              email: data.user.email,
-              created_at: new Date().toISOString()
-            })
+    //       const { error: profileError } = await supabase
+    //         .from('profiles')
+    //         .upsert({
+    //           id: data.user.id,
+    //           email: data.user.email,
+    //           created_at: new Date().toISOString()
+    //         })
 
-          if (profileError) {
-            console.error('Error creating profile:', profileError)
-          }
+    //       if (profileError) {
+    //         console.error('Error creating profile:', profileError)
+    //       }
 
-          router.push('/dashboard')
-        } else {
-          // For OAuth, the actual user data might be retrieved after redirect
-          router.push('/dashboard')
-        }
-      }
-    } catch (err) {
-      setError('OAuth signup failed')
-    }
+    //       router.push('/dashboard')
+    //     } else {
+    //       // For OAuth, the actual user data might be retrieved after redirect
+    //       router.push('/dashboard')
+    //     }
+    //   }
+    // } catch (err) {
+    //   setError('OAuth signup failed')
+    // }
   }
 
   return (

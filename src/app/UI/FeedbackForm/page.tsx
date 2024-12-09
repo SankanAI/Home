@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js'
 import { Button } from "@/components/ui/button"
 import {
@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/accordion"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import Cookies from 'js-cookie'
+import { useRouter } from 'next/navigation';
 
 // Course Interest Options
 const COURSE_INTERESTS = [
@@ -59,6 +60,7 @@ export default function FeedbackForm() {
   const [challengeLevel, setChallengeLevel] = useState('JUST_RIGHT');
   const [suggestions, setSuggestions] = useState('');
   const [wouldRecommend, setWouldRecommend] = useState('YES');
+  const router =useRouter();
   
   // Dialog state for feedback submission messages
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -69,6 +71,13 @@ export default function FeedbackForm() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
+
+
+  useEffect(()=>{
+     if(!Cookies.get('userId')){
+      router.push('/Authentication/login')
+     }
+  },[])
 
   // Form validation
   const validateForm = () => {
@@ -113,20 +122,20 @@ export default function FeedbackForm() {
         setDialogOpen(true);
         return;
       }
-
+      console.log("1")
       // 2. Check if user exists in database
       const { data: userData, error: userError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
-
+   
       if (userError || !userData) {
         setDialogMessage('User not found in database.');
         setDialogOpen(true);
         return;
       }
-
+      console.log("2")
       // 3. Check if user has already submitted feedback
       const { data: existingFeedback, error: feedbackError } = await supabase
         .from('feedback')
@@ -139,7 +148,7 @@ export default function FeedbackForm() {
         setDialogOpen(true);
         return;
       }
-
+      console.log("3")
       // 4. If all checks pass, submit feedback
       const { error } = await supabase.from('feedback').insert({
         user_id: userId,
@@ -153,11 +162,11 @@ export default function FeedbackForm() {
         suggestions,
         would_recommend: wouldRecommend
       });
-
+      console.log("4")
       if (error) {
-        throw error;
+        return (error);
       }
-
+      console.log("5")
       // Reset form and show success message
       resetForm();
       setDialogMessage('Feedback submitted successfully!');
@@ -206,7 +215,7 @@ export default function FeedbackForm() {
           {/* Personal Information Section */}
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label>Full Name</label>
+              <label htmlFor="full-name">Full Name</label>
               <Input 
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -214,7 +223,7 @@ export default function FeedbackForm() {
               />
             </div>
             <div>
-              <label>Age</label>
+              <label htmlFor="Age">Age</label>
               <Input 
                 type="number"
                 value={age === 0 ? '' : age}
@@ -223,7 +232,7 @@ export default function FeedbackForm() {
               />
             </div>
             <div>
-              <label>Email</label>
+              <label htmlFor="Email">Email</label>
               <Input 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -231,7 +240,7 @@ export default function FeedbackForm() {
               />
             </div>
             <div>
-              <label>Parent/Guardian Email (Optional)</label>
+              <label htmlFor="parent-email">Parent/Guardian Email (Optional)</label>
               <Input 
                 value={parentEmail}
                 onChange={(e) => setParentEmail(e.target.value)}
@@ -242,7 +251,8 @@ export default function FeedbackForm() {
 
           {/* Course Interests */}
           <div>
-            <label>Courses of Interest</label>
+{/* Suggested code may be subject to a license. Learn more: ~LicenseLog:1255999291. */}
+            <label htmlFor="course-of-interests">Courses of Interest</label>
             <div className="grid md:grid-cols-3 gap-4">
               {COURSE_INTERESTS.map((course) => (
                 <div key={course.id} className="flex items-center space-x-2">
@@ -250,7 +260,7 @@ export default function FeedbackForm() {
                     checked={courseInterests.includes(course.id)}
                     onCheckedChange={() => toggleCourseInterest(course.id)}
                   />
-                  <label>{course.label}</label>
+                  <label htmlFor="course-label">{course.label}</label>
                 </div>
               ))}
             </div>
@@ -259,7 +269,7 @@ export default function FeedbackForm() {
           {/* Experience Ratings */}
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label>Overall Experience Rating</label>
+              <label htmlFor="Overall">Overall Experience Rating</label>
               <RadioGroup 
                 value={overallExperience} 
                 onValueChange={setOverallExperience}
@@ -268,13 +278,13 @@ export default function FeedbackForm() {
                 {['1', '2', '3', '4', '5'].map(rating => (
                   <div key={rating} className="flex items-center space-x-2">
                     <RadioGroupItem value={rating} />
-                    <label>{rating}</label>
+                    <label htmlFor="rating">{rating}</label>
                   </div>
                 ))}
               </RadioGroup>
             </div>
             <div>
-              <label>Challenge Level</label>
+              <label htmlFor="Challenge">Challenge Level</label>
               <Select 
                 value={challengeLevel}
                 onValueChange={setChallengeLevel}
@@ -294,7 +304,7 @@ export default function FeedbackForm() {
 
           {/* Suggestions Section */}
           <div>
-            <label>Additional Suggestions</label>
+            <label htmlFor="Additional">Additional Suggestions</label>
             <Textarea
               value={suggestions}
               onChange={(e) => setSuggestions(e.target.value)}
@@ -304,7 +314,7 @@ export default function FeedbackForm() {
 
           {/* Recommendation Section */}
           <div>
-            <label>Would You Recommend Us?</label>
+            <label htmlFor="would">Would You Recommend Us?</label>
             <RadioGroup 
               value={wouldRecommend}
               onValueChange={setWouldRecommend}
@@ -312,11 +322,11 @@ export default function FeedbackForm() {
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="YES" />
-                <label>Yes</label>
+                <label htmlFor="YES">Yes</label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="NO" />
-                <label>No</label>
+                <label htmlFor="NO">No</label>
               </div>
             </RadioGroup>
           </div>
