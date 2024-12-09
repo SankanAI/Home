@@ -1,5 +1,5 @@
 name: Deploy NextJS to GitHub Pages
-# Updated some files
+
 on:
   # Runs on pushes to the default branch
   push:
