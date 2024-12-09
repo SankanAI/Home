@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Github, Send } from 'lucide-react'
+import { Github } from 'lucide-react'
 import { supabase } from '@/lib/supabase-client'
 import Cookies from 'js-cookie'
 import { useState, useEffect } from 'react'
@@ -34,11 +34,11 @@ export default function CreateAccount() {
   }
 
 
-  // useEffect(()=>{
-  //    if(Cookies.get('userId')){
-  //     router.push('/')
-  //    }
-  // },[])
+  useEffect(()=>{
+     if(Cookies.get('userId')){
+      router.push('/')
+     }
+  },[])
 
   const handleEmailSignIn = async () => {
     // Basic email and password validation
@@ -79,12 +79,12 @@ export default function CreateAccount() {
         router.push('/')
       }
     } catch (err) {
-      setError('An unexpected error occurred')
+      setError('An unexpected error occurred'+err)
     }
   }
 
   const handleOAuthSignUp = async (provider: Provider) => {
-    alert("Not Available as of Now")
+    alert("Not Available as of Now"+provider)
     // try {
     //   const { data, error } = await supabase.auth.signInWithOAuth({
     //     provider,

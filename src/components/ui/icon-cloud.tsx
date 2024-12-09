@@ -10,6 +10,7 @@ import {
   SimpleIcon,
 } from "react-icon-cloud";
 
+// Cloud configuration
 export const cloudProps: Omit<ICloud, "children"> = {
   containerProps: {
     style: {
@@ -18,7 +19,7 @@ export const cloudProps: Omit<ICloud, "children"> = {
       alignItems: "center",
       width: "100%",
       paddingTop: 20,
-      background:'#020617'
+      background: '#020617'
     },
   },
   options: {
@@ -37,10 +38,12 @@ export const cloudProps: Omit<ICloud, "children"> = {
   },
 };
 
+// Function to render custom icon
 export const renderCustomIcon = (icon: SimpleIcon, theme: string) => {
-  const bgHex ="#020617";
-  const fallbackHex ="#ffffff";
+  const bgHex = "#020617";
+  const fallbackHex = "#ffffff";
   const minContrastRatio = theme === "dark" ? 2 : 1.2;
+
   return renderSimpleIcon({
     icon,
     bgHex,
@@ -51,7 +54,7 @@ export const renderCustomIcon = (icon: SimpleIcon, theme: string) => {
       href: undefined,
       target: undefined,
       rel: undefined,
-      onClick: (e: any) => e.preventDefault(),
+      onClick: (e: React.MouseEvent) => e.preventDefault(), // Use React.MouseEvent instead of 'any'
     },
   });
 };
@@ -67,16 +70,19 @@ export default function IconCloud({ iconSlugs }: DynamicCloudProps) {
   const [data, setData] = useState<IconData | null>(null);
   const { resolvedTheme } = useTheme();
 
+  // Set isClient to true once component is mounted
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  // Fetch icon data once client-side rendering is confirmed
   useEffect(() => {
     if (isClient) {
       fetchSimpleIcons({ slugs: iconSlugs }).then(setData);
     }
   }, [iconSlugs, isClient]);
 
+  // Memoize rendered icons
   const renderedIcons = useMemo(() => {
     if (!data || !isClient) return null;
     return Object.values(data.simpleIcons).map((icon) =>

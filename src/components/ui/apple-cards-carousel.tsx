@@ -171,6 +171,7 @@ export const Card = ({
       if (event.key === "Escape") {
         handleClose();
       }
+      console.log(currentIndex)
     }
 
     if (open) {

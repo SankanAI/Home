@@ -20,11 +20,12 @@ export default function Signup() {
   const router = useRouter()
 
 
-//   useEffect(()=>{
-//     if(Cookies.get('userId')){
-//      router.push('/')
-//     }
-//  },[])
+  useEffect(()=>{
+    if(Cookies.get('userId')){
+     router.push('/')
+    }
+// Suggested code may be subject to a license. Learn more: ~LicenseLog:108453134.
+ },[email, password, repassword])
 
   const showToast = (title: string, description: string, type: 'default' | 'destructive' = 'default') => {
     setToast({ show: true, title, description, type })

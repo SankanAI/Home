@@ -1,5 +1,5 @@
 // hooks/use-outside-click.ts
-import { useEffect, useRef, RefObject } from 'react';
+import { useEffect, useRef} from 'react';
 
 export const useOutsideClick = (
   callback: () => void, 

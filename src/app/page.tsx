@@ -7,7 +7,7 @@ import AppleCardsCarouselDemo from "./AppleCardsCarouselDemo";
 import { useRouter } from "next/navigation";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import More from "./UI/More";
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 
 const slugs = [
   "typescript",
@@ -90,6 +90,7 @@ export default function Home() {
     const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
       const rect = e.currentTarget.getBoundingClientRect();
       setHovered(true);
+      console.log(hovered)
       setPosition({
         x: rect.right + 10, // Place the HTML content 10px to the right of the hovered element
         y: rect.top,

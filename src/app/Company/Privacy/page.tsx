@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   Shield, 
   Lock, 
   BookOpen, 
-  Rocket, 
   Star, 
   Check, 
   XCircle, 
@@ -20,7 +19,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from "@/components/ui/badge";
 
 export default function PrivacyPolicyPage() {
-  const [activeSection, setActiveSection] = useState<string | null>(null);
 
   const policySections = [
     {
@@ -108,7 +106,7 @@ export default function PrivacyPolicyPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <XCircle className="text-red-500" /> 
-              What We DON'T Do
+              What We DONT Do
             </CardTitle>
           </CardHeader>
           <CardContent>

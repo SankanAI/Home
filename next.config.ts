@@ -1,9 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'export', // Enables static export for GitHub Pages
   images: {
-    domains: ['images.unsplash.com', 'flaticon.com', 'github.com', 'assets.aceternity.com','images.pexels.com']
-  }
+    unoptimized: true, // Required for GitHub Pages to handle images
+    domains: [
+      'images.unsplash.com', 
+      'flaticon.com', 
+      'github.com', 
+      'assets.aceternity.com',
+      'images.pexels.com'
+    ],
+  },
+  basePath: process.env.NODE_ENV === 'production' ? '/Home' : undefined, // Base path for subfolder deployment
 };
 
 export default nextConfig;

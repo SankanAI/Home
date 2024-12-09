@@ -4,9 +4,6 @@ import Link from 'next/link'
 import { IconBrandGithub, IconBrandLinkedin, IconBrandX } from '@tabler/icons-react'
 import Sankan from '/public/Sankan.svg'
 import Image from 'next/image';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 
 function Copyright() {
   return (

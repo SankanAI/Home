@@ -4,12 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+
 import { 
   Linkedin, 
   Github, 
-  Mail, 
   CodeIcon, 
   Target, 
   Award, 
@@ -135,9 +133,9 @@ export default function ShashankPortfolio() {
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Let's Collaborate!</DialogTitle>
+                  <DialogTitle>Lets Collaborate!</DialogTitle>
                   <DialogDescription>
-                    Interested in building something impactful? Reach out and let's discuss your ideas.
+                    Interested in building something impactful? Reach out and lets discuss your ideas.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4 text-black">

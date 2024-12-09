@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   Card, 
   CardContent, 
@@ -27,7 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 
 export default function AboutUsSection() {
-  const [activeTab, setActiveTab] = useState('mission');
+  // const [activeTab, setActiveTab] = useState('mission');
 
   const companyValues = [
     {

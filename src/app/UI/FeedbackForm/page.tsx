@@ -3,15 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js'
 import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -30,12 +21,6 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card"
-import { 
-  Accordion, 
-  AccordionContent, 
-  AccordionItem, 
-  AccordionTrigger 
-} from "@/components/ui/accordion"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/navigation';
@@ -77,7 +62,7 @@ export default function FeedbackForm() {
      if(!Cookies.get('userId')){
       router.push('/Authentication/login')
      }
-  },[])
+  },[name, email])
 
   // Form validation
   const validateForm = () => {
@@ -137,7 +122,7 @@ export default function FeedbackForm() {
       }
       console.log("2")
       // 3. Check if user has already submitted feedback
-      const { data: existingFeedback, error: feedbackError } = await supabase
+      const { data: existingFeedback } = await supabase
         .from('feedback')
         .select('*')
         .eq('user_id', userId)
