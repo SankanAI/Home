@@ -46,7 +46,7 @@ export default function PrivacyPolicyPage() {
   ];
 
   return (
-    <div className="container mx-auto p-6 space-y-8" className="w-[90%] lg:w-[70%] ml-[5%] lg:ml-[15%]">
+    <div className="container mx-auto p-6 space-y-8 w-[90%] lg:w-[70%] ml-[5%] lg:ml-[15%]">
       <div className="text-center space-y-4">
         <h1 className="text-4xl font-bold flex items-center justify-center gap-3">
           <Shield className="text-white" /> Sankan AI Privacy Promise
