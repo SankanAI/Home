@@ -103,19 +103,19 @@ export default function Home() {
     };
  
   return (
-      <main style={{width:window.innerWidth>1023?'90%':'100%', marginLeft:window.innerWidth>1023?'5%':'0%', background:'rgb(2 6 23)'}}>
-      <div style={{borderRadius:window.innerWidth>1023?'0px 0px 30px 30px':'0px'}}  className="relative flex  w-full flex-col items-left justify-center overflow-hidden rounded-lgs bg-slate-950">
-      <div style={{display:window.innerWidth>1023?'inline-flex':'block'}}>
-        <li style={{width:window.innerWidth>1023?'45%':'100%', display:'inline-flex', padding:window.innerWidth>1000?"5vh":"0vh"}}>
+      <main className="w-full ml-0 bg-[#020617] lg:w-[90%] lg:ml-[5%]">
+      <div className="relative flex w-full flex-col items-left justify-center overflow-hidden bg-slate-950 rounded-none lg:rounded-b-[30px]">
+      <div className="block lg:inline-flex">
+        <li className="w-full lg:w-[45%] inline-flex lg:p-[5vh] p-0">
           <div className="relative flex max-w-lg items-center justify-center overflow-hidden  bg-slate-950 px-10 pb-10 pt-4 ">
             <IconCloud iconSlugs={slugs} />
           </div>
         </li>
-        <li style={{width:window.innerWidth>1023?'60%':'100%', display:'inline-flex', padding:window.innerWidth>1023?'10vh':'3vh', textAlign:window.innerWidth>1023?"left":"center"}}>
+        <li className="w-full lg:w-[60%] inline-flex p-[3vh] lg:p-[10vh] text-center lg:text-left">
           <div>
             <p className=" tracking-tighter text-6xl sm:text-6xl md:text-6xl  lg:text-6xl xl:text-9xl text-gray-900 dark:text-white mb-4 pt-5 text-gray-50" style={{color:'white'}}>Sankan AI</p>
             <h1 className="tracking-tight text-1xl sm:text-2xl md:text-2xl  lg:text-2xl xl:text-3xl text-gray-900 dark:text-white mb-4 text-gray-50" style={{ color:'white'}}>Unlock
-            <span style={{padding:'0.3vh', paddingLeft:'1vh', paddingRight:'1vh', borderRadius:'2vh', background:'blue', cursor:'pointer', border:'5px solid black'}} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>Creativity</span>, One Pixel at a Time</h1>
+            <span className="p-[0.3vh] px-[1vh] rounded-[2vh] bg-blue-500 cursor-pointer border-[5px] border-black" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>Creativity</span>, One Pixel at a Time</h1>
             <RainbowButton className="my-4" onClick={()=>{router.push("/Authentication/login")}}>Join Waitlist</RainbowButton>
             {position && (
         <div
@@ -136,14 +136,14 @@ export default function Home() {
       <AnimatedTestimonials testimonials={testimonials} />
       <RetroGrid />
       </div>
-      <div style={{marginTop:'2vh'}}>
-        <div style={{display:'inline-flex', width:window.innerWidth>1023?'50%':'100%', padding:window.innerWidth>1000?"8vh":"0vh"}}>
-            <h1 className=" tracking-tighter text-7xl text-gray-50 "  style={{width:'100%', textAlign:window.innerWidth>1023?"left":"center", fontSize:window.innerWidth>1023?'70px':'50px'}}>
+      <div className="mt-[2vh]">
+        <div className="inline-flex w-full lg:w-[50%] p-0 lg:p-[8vh]">
+            <h1 className="w-full text-gray-50 text-7xl lg:text-[70px] text-[50px] lg:text-left text-center tracking-tighter">
               Sankan AI <br/>
-              <p className="tracking-tight text-3xl dark:text-white mb-4 text-gray-50 mt:10" style={{width:'100%', fontSize:window.innerWidth>1023?'23px':'18px'}}>Spark is a revolutionary learning platform that transforms education into an adventure, blending critical thinking, coding, financial wisdom, communication skills, and adaptability through gamified, interactive challenges that make learning irresistibly fun for the next generation of innovators.</p>
+              <p className="w-full text-3xl dark:text-white text-gray-50 tracking-tight mb-4 mt-10 lg:text-[23px] text-[18px]">Spark is a revolutionary learning platform that transforms education into an adventure, blending critical thinking, coding, financial wisdom, communication skills, and adaptability through gamified, interactive challenges that make learning irresistibly fun for the next generation of innovators.</p>
             </h1>
         </div>
-        <div style={{ display:'inline-flex',width:window.innerWidth>1023?'45%':'90%',marginLeft:window.innerWidth>1000?'0%':'5%', marginTop:'3vh'}}>
+        <div className="inline-flex w-full lg:w-[45%] lg:ml-0 ml-[5%] mt-[3vh]">
           <AnimatedBeamMultipleOutputDemo/>
         </div>
       </div>

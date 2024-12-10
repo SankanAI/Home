@@ -130,12 +130,7 @@ export default function CreateAccount() {
 
   return (
     <div 
-      className="bg-[#0A0A0B] text-white p-4" 
-      style={{
-        width: typeof window !== 'undefined' && window.innerWidth > 700 ? "30%" : "100%", 
-        marginLeft: typeof window !== 'undefined' && window.innerWidth > 700 ? "35%" : "0%", 
-        borderRadius: typeof window !== 'undefined' && window.innerWidth > 700 ? "8vh" : "0vh"
-      }}
+      className="bg-[#0A0A0B] text-white p-4 w-full lg:w-[30%] lg:ml-[35%] lg:rounded-[8vh] rounded-0"
     >
       {/* Create Account Section */}
       <div className="space-y-6 bg-[#111113] rounded-lg p-6 mb-4">

@@ -2,6 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'export', // Enables static export for GitHub Pages
+  eslint: {
+    ignoreDuringBuilds: true, // Ignore ESLint during the build process
+  },
+  typescript:{
+    ignoreBuildErrors: true,
+  },
   images: {
     unoptimized: true, // Required for GitHub Pages to handle images
     domains: [

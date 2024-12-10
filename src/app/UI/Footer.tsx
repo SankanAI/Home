@@ -23,10 +23,10 @@ export default function Footer() {
     <footer className="container mx-auto px-4 py-8 sm:py-10" style={{paddingTop:'10vh'}}>
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-8">
         {/* Newsletter Section */}
-        <div className="col-span-1 sm:col-span-2" style={{paddingLeft:window.innerWidth>1023?'15vh':'0vh'}}>
+        <div className="col-span-1 sm:col-span-2 pl-[15vh] lg:pl-[0vh]">
           <Image src={Sankan} alt="logo" width={110} height={110} style={{borderRadius:'50px',padding:'8px', border:'3px solid white'}}/>
-          <h4 className="text-base font-semibold mt-2" style={{paddingLeft:window.innerWidth>1023?'2vh':'0vh'}}>Sankan AI</h4>
-          <p className="text-base text-white mb-2" style={{paddingLeft:window.innerWidth>1023?'2vh':'0vh'}}>
+          <h4 className="text-base font-semibold mt-2 pl-[2vh] lg:pl-[0vh]">Sankan AI</h4>
+          <p className="text-base text-white mb-2 pl=[2vh] lg:pl-[0vh]">
             Building Something that can change !
           </p>
         </div>

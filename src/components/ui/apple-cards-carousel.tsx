@@ -1,4 +1,3 @@
-"use client";
 import React, {
   useEffect,
   useRef,
@@ -14,7 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import Image, { ImageProps } from "next/image";
-import { useOutsideClick } from "@/hooks/use-outside-click";
+import { useOutsideClick } from "@/hooks/use-outside-click"; // Import the hook
 
 interface CarouselProps {
   items: JSX.Element[];
@@ -31,7 +30,7 @@ type Card = {
 export const CarouselContext = createContext<{
   onCardClose: (index: number) => void;
   currentIndex: number;
-}>({
+}>( {
   onCardClose: () => {},
   currentIndex: 0,
 });
@@ -71,7 +70,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
 
   const handleCardClose = (index: number) => {
     if (carouselRef.current) {
-      const cardWidth = isMobile() ? 230 : 384; // (md:w-96)
+      const cardWidth = isMobile() ? 230 : 384;
       const gap = isMobile() ? 4 : 8;
       const scrollPosition = (cardWidth + gap) * (index + 1);
       carouselRef.current.scrollTo({
@@ -83,13 +82,13 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
   };
 
   const isMobile = () => {
-    return window && window.innerWidth < 768;
+    if (window !== undefined) {
+      return window && window.innerWidth < 768;
+    }
   };
 
   return (
-    <CarouselContext.Provider
-      value={{ onCardClose: handleCardClose, currentIndex }}
-    >
+    <CarouselContext.Provider value={{ onCardClose: handleCardClose, currentIndex }}>
       <div className="relative w-full">
         <div
           className="flex w-full overflow-x-scroll overscroll-x-auto py-10 md:py-20 scroll-smooth [scrollbar-width:none]"
@@ -102,12 +101,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
             )}
           ></div>
 
-          <div
-            className={cn(
-              "flex flex-row justify-start gap-4 pl-4",
-              "max-w-7xl mx-auto" // remove max-w-4xl if you want the carousel to span the full width of its container
-            )}
-          >
+          <div className={cn("flex flex-row justify-start gap-4 pl-4", "max-w-7xl mx-auto")}>
             {items.map((item, index) => (
               <motion.div
                 initial={{
@@ -171,7 +165,7 @@ export const Card = ({
       if (event.key === "Escape") {
         handleClose();
       }
-      console.log(currentIndex)
+      console.log(currentIndex);
     }
 
     if (open) {
@@ -180,11 +174,11 @@ export const Card = ({
       document.body.style.overflow = "auto";
     }
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open]);
-
-  useOutsideClick(containerRef, () => handleClose());
+    if (window !== undefined) {
+      window.addEventListener("keydown", onKeyDown);
+      return () => window.removeEventListener("keydown", onKeyDown);
+    }
+  }, [open, currentIndex]);
 
   const handleOpen = () => {
     setOpen(true);
@@ -194,6 +188,9 @@ export const Card = ({
     setOpen(false);
     onCardClose(index);
   };
+
+  // Use the hook here correctly
+  useOutsideClick(containerRef, handleClose);
 
   return (
     <>
@@ -246,53 +243,30 @@ export const Card = ({
         <div className="relative z-40 p-8">
           <motion.p
             layoutId={layout ? `category-${card.category}` : undefined}
-            className="text-white text-sm md:text-base font-medium text-left"
+            className="text-white text-lg"
           >
             {card.category}
           </motion.p>
           <motion.p
             layoutId={layout ? `title-${card.title}` : undefined}
-            className="text-white text-xl md:text-3xl max-w-xs text-left [text-wrap:balance] mt-2"
+            className="text-white text-2xl md:text-4xl mt-2"
           >
             {card.title}
           </motion.p>
         </div>
-        <BlurImage
-          src={card.src}
-          alt={card.title}
-          fill
-          className="object-cover absolute z-10 inset-0"
-        />
+        <motion.div
+          layoutId={layout ? `image-${card.src}` : undefined}
+          className="absolute top-0 inset-x-0 h-full w-full"
+        >
+          <Image
+            src={card.src}
+            alt={card.title}
+            layout="fill"
+            objectFit="cover"
+            className="rounded-3xl"
+          />
+        </motion.div>
       </motion.button>
     </>
-  );
-};
-
-export const BlurImage = ({
-  height,
-  width,
-  src,
-  className,
-  alt,
-  ...rest
-}: ImageProps) => {
-  const [isLoading, setLoading] = useState(true);
-  return (
-    <Image
-      className={cn(
-        "transition duration-300",
-        isLoading ? "blur-sm" : "blur-0",
-        className
-      )}
-      onLoad={() => setLoading(false)}
-      src={src}
-      width={width}
-      height={height}
-      loading="lazy"
-      decoding="async"
-      blurDataURL={typeof src === "string" ? src : undefined}
-      alt={alt ? alt : "Background of a beautiful view"}
-      {...rest}
-    />
   );
 };

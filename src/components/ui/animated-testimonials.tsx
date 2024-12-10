@@ -49,7 +49,7 @@ export const AnimatedTestimonials = ({
       const interval = setInterval(handleNext, 5000);
       return () => clearInterval(interval);
     }
-  }, [autoplay, isClient]);
+  }, [autoplay, isClient, handleNext]);
 
   if (!isClient) {
     return null; // Prevents server-side rendering of animated content

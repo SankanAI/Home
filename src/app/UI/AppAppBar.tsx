@@ -21,7 +21,7 @@ export default function AppAppBar() {
   ];
 
   return (
-    <header style={{width:window.innerWidth>1023?"60%":"90%", marginLeft:window.innerWidth>1023?"20%":"5%", zIndex:2, borderRadius:'40px'}} className="relative top-8 left-0 right-0 z-50">
+    <header className="relative top-8 left-0 right-0 z-50 w-[90%] lg:w-[60%] ml-[5%] lg:ml-[20%] rounded-[40px]">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between bg-white/40 backdrop-blur-lg rounded-full p-3 pl-5 pr-6 shadow-sm">
           {/* Logo */}
@@ -38,8 +38,7 @@ export default function AppAppBar() {
                 <Link
                   key={item.label}
                   href={item.href}
-                  style={{color:window.innerWidth>600?"white":"black"}}
-                  className="text-sm text-white hover:text-black px-3 py-2 rounded-md"
+                  className="text-sm text-white hover:text-black px-3 py-2 rounded-md text-black md:text-white"
                 >
                   {item.label}
                 </Link>
